@@ -217,18 +217,341 @@ export default createConfig({ name: 'MyLib' })
 
 ### 1.7 CI/CD（可选）
 
-**GitHub Actions 工作流设计**
+当前仓库已经落地了两个 GitHub Actions 工作流：
 
-| Job       | 触发条件       | 执行内容                  |
-| --------- | -------------- | ------------------------- |
-| `ci`      | PR 创建/更新   | lint + typecheck + test   |
-| `release` | push to `main` | build + changeset publish |
+- `.github/workflows/ci.yml`
+- `.github/workflows/release.yml`
 
-**要点**：
+它们分别负责：
 
-- `actions/cache` 缓存 pnpm store，加速安装
-- `release` 依赖 `ci` 通过，防止破坏性变更发布到 npm
-- npm 发布使用 `NPM_TOKEN` secret
+- `ci.yml`：做“代码质量校验”
+- `release.yml`：做“版本 PR / 自动发布”
+
+可以把它们理解成：
+
+- **CI** = 代码变更时，自动检查项目有没有坏
+- **CD** = 合并到主分支后，自动推进版本和发布流程
+
+---
+
+#### 1）`ci.yml` 是怎么工作的
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+```
+
+这部分表示：
+
+- 工作流名字叫 `CI`
+- 触发时机有两个：
+  - 任意 `pull_request`
+  - `push` 到 `main`
+
+也就是：
+
+- 提 PR 时会自动检查一次
+- 直接往 `main` 推代码时也会检查一次
+
+这样可以保证主分支和 PR 都经过统一验证。
+
+```yaml
+jobs:
+  ci:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+```
+
+这部分表示定义了一个 `ci` 任务：
+
+- 任务展示名是 `Lint, typecheck, test, build`
+- 运行环境是 GitHub 提供的 Linux 虚拟机 `ubuntu-latest`
+
+GitHub Actions 的本质，就是在触发事件后临时开一台干净机器，按顺序执行你定义的步骤。
+
+```yaml
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+```
+
+第一步是把仓库代码拉到这台临时机器上。不 checkout 的话，后面的命令没有代码可执行。
+
+```yaml
+- name: Setup pnpm
+  uses: pnpm/action-setup@v4
+  with:
+    version: 9.0.0
+```
+
+安装并启用 `pnpm`，版本固定为 `9.0.0`，和根 `package.json` 的 `packageManager` 保持一致。
+
+```yaml
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version-file: .node-version
+    cache: pnpm
+```
+
+这一步做两件事：
+
+- 根据根目录 `.node-version` 安装 Node.js
+- 开启 `pnpm` 缓存，减少重复安装依赖的时间
+
+`node-version-file` 的好处是：本地开发和 CI 统一使用同一个 Node 版本来源，避免版本漂移。
+
+```yaml
+- name: Install dependencies
+  run: pnpm install --frozen-lockfile
+```
+
+安装依赖。
+
+这里用了 `--frozen-lockfile`，意思是：
+
+- 必须严格按照 `pnpm-lock.yaml` 安装
+- 如果 `package.json` 和 lockfile 不一致，直接报错
+
+这样可以防止“本地偷偷改了依赖但没提交 lockfile”这种问题。
+
+```yaml
+- name: Lint
+  run: pnpm lint
+
+- name: Typecheck
+  run: pnpm typecheck
+
+- name: Test
+  run: pnpm test
+
+- name: Build
+  run: pnpm build
+```
+
+这四步就是 CI 的核心校验：
+
+- `pnpm lint`：检查代码规范和潜在问题
+- `pnpm typecheck`：运行 TypeScript 类型检查
+- `pnpm test`：执行单元测试
+- `pnpm build`：验证项目是否能成功构建
+
+设计意图是：**只要其中任一步失败，这次 CI 就失败**，PR 就会显示红灯，提醒开发者修复问题。
+
+---
+
+#### 2）`release.yml` 是怎么工作的
+
+```yaml
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+```
+
+这部分表示：
+
+- 工作流名字叫 `Release`
+- 只有当代码 push 到 `main` 时才会触发
+
+也就是说，发布流程不会在普通分支或 PR 上运行，只会在主分支运行。
+
+```yaml
+jobs:
+  release:
+    name: Version or publish packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
+```
+
+这里定义了一个 `release` 任务。
+
+`permissions` 的含义：
+
+- `contents: write`：允许修改仓库内容，比如推送版本变更
+- `pull-requests: write`：允许创建或更新版本 PR
+- `packages: write`：允许包发布相关操作
+
+因为 `changesets/action` 需要自动创建 PR 或发布包，所以必须给对应权限。
+
+```yaml
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+```
+
+这里同样先拉代码，但多了 `fetch-depth: 0`。
+
+它的作用是拉取完整 git 历史，而不是默认的浅克隆。Changesets 在判断版本、生成 PR、处理发布时，完整历史会更稳妥。
+
+```yaml
+- name: Setup pnpm
+  uses: pnpm/action-setup@v4
+  with:
+    version: 9.0.0
+
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version-file: .node-version
+    cache: pnpm
+    registry-url: https://registry.npmjs.org
+```
+
+和 CI 类似，这里也会安装 pnpm 和 Node。额外的：
+
+- `registry-url: https://registry.npmjs.org`
+
+表示后续发布默认面向 npm 官方仓库。
+
+```yaml
+- name: Install dependencies
+  run: pnpm install --frozen-lockfile
+```
+
+同样严格按照 lockfile 安装依赖，确保发布环境可重复。
+
+```yaml
+- name: Create release pull request or publish
+  uses: changesets/action@v1
+  with:
+    version: pnpm version-packages
+    publish: pnpm release
+```
+
+这是整个发布流程的核心。
+
+`changesets/action` 会根据仓库里有没有未消费的 `.changeset/*.md` 文件，做两类事情：
+
+##### 情况 A：存在 changeset，但还没生成版本 PR
+
+它会执行：
+
+- `pnpm version-packages`
+
+也就是运行：
+
+- `changeset version`
+
+作用是：
+
+- 更新相关包的 `version`
+- 更新 `CHANGELOG.md`
+- 生成一个“版本更新 PR”
+
+这个 PR 通常会把所有待发布的版本修改集中起来，方便审查。
+
+##### 情况 B：版本 PR 已合并，已经具备发布条件
+
+它会执行：
+
+- `pnpm release`
+
+根据你当前根 `package.json`，这个脚本等价于：
+
+- `pnpm build && changeset publish`
+
+也就是：
+
+1. 先构建项目
+2. 再把需要发布的包发布到 npm
+
+所以这个工作流并不是“每次 push main 就直接盲目发包”，而是借助 Changesets 按状态决定：
+
+- 是先创建/更新版本 PR
+- 还是正式发布
+
+这也是 Changesets 推荐的标准模式。
+
+```yaml
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+这里配置的是发布所需的环境变量：
+
+- `GITHUB_TOKEN`：GitHub 自动提供，用于创建 PR、推送提交等仓库操作
+- `NPM_TOKEN`：需要你手动在 GitHub 仓库 Secrets 中配置，用于向 npm 发布包
+
+如果没有 `NPM_TOKEN`，版本 PR 仍可能创建成功，但真正发布到 npm 会失败。
+
+---
+
+#### 3）这两个工作流之间的关系
+
+可以把它们理解成两层防线：
+
+##### 第一层：`ci.yml`
+
+负责回答：
+
+- 这次代码改动有没有把项目搞坏？
+- lint、类型、测试、构建能不能通过？
+
+##### 第二层：`release.yml`
+
+负责回答：
+
+- 主分支上是否有需要发布的 changeset？
+- 现在应该创建版本 PR，还是直接发布 npm 包？
+
+也就是说：
+
+- `ci.yml` 偏向“质量校验”
+- `release.yml` 偏向“版本与交付”
+
+---
+
+#### 4）为什么当前这样设计
+
+结合当前仓库现状，这套配置有几个特点：
+
+1. **和现有脚本完全对齐**
+   - `lint` → `pnpm lint`
+   - `typecheck` → `pnpm typecheck`
+   - `test` → `pnpm test`
+   - `build` → `pnpm build`
+   - `version` → `pnpm version-packages`
+   - `publish` → `pnpm release`
+
+2. **和 Changesets 配套**
+   当前仓库已经有 `.changeset/config.json`，因此发布流程直接采用 `changesets/action` 最自然。
+
+3. **兼容模板仓库场景**
+   即使现在 `packages/` 下还没有真正的示例包，CI/CD 架子也已经搭好；后面你补充 `my-lib`、测试和文档后，这套流程可以直接继续复用。
+
+---
+
+#### 5）使用时的注意事项
+
+- 如果当前项目还没有配置好 Vitest，`pnpm test` 可能失败，这是正常的阶段性现象。
+- 如果还没有可发布的包，`changeset publish` 不会真正发布内容。
+- 要让自动发布生效，必须在 GitHub 仓库设置 `NPM_TOKEN`。
+- 推荐结合 GitHub 分支保护规则，要求 PR 必须通过 `CI` 后才能合并到 `main`。
+
+---
+
+#### 6）一句话理解
+
+- `ci.yml`：**每次改代码，都在一台干净机器上重新跑一遍 lint / 类型检查 / 测试 / 构建**
+- `release.yml`：**每次主分支更新，都让 Changesets 判断现在是该出版本 PR，还是该正式发 npm 包**
+
+这就是当前仓库 `1.7 CI/CD` 的实现原理。
+
+---
 
 ---
 
