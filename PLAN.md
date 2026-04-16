@@ -74,7 +74,7 @@
 
 ### 1.7 CI/CD（可选）
 
-- [ ] GitHub Actions：PR 触发 lint + test，merge 触发构建 + 发布
+- [x] GitHub Actions：PR 触发 lint + test，merge 触发构建 + 发布
 
 ---
 
@@ -84,23 +84,23 @@
 
 ### 2.1 包初始化
 
-- [ ] 创建 `packages/my-lib`，配置独立 `package.json`（name、version、exports 字段）
-- [ ] 继承根 TypeScript 配置，配置子包 `tsconfig.json`
+- [x] 创建 `packages/my-lib`，配置独立 `package.json`（name、version、exports 字段）
+- [x] 继承根 TypeScript 配置，配置子包 `tsconfig.json`
 
 ### 2.2 基础源码结构
 
-- [ ] 创建 `src/index.ts` 作为入口，导出示例函数/组件
-- [ ] 确保构建产物包含 ESM / CJS / IIFE + `.d.ts`
+- [x] 创建 `src/index.ts` 作为入口，导出示例函数/组件
+- [x] 确保构建产物包含 ESM / CJS / IIFE + `.d.ts`
 
 ### 2.3 单元测试
 
-- [ ] 配置 Vitest（继承根配置）
-- [ ] 编写示例测试用例，验证测试链路
+- [x] 配置 Vitest（继承根配置）
+- [x] 编写示例测试用例，验证测试链路
 
 ### 2.4 playground 联调
 
-- [ ] `playground` 通过 `workspace:*` 引用 `my-lib`，验证本地包链接
-- [ ] 验证热更新（修改源码 → playground 自动刷新）
+- [x] `playground` 通过 `workspace:*` 引用 `my-lib`，验证本地包链接
+- [x] 验证热更新（修改源码 → playground 自动刷新）
 
 ---
 

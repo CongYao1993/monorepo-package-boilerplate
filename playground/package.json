@@ -7,6 +7,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "my-lib": "workspace:*"
+  },
   "devDependencies": {
     "vite": "^6.0.0"
   }

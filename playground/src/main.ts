@@ -1,10 +1,10 @@
-// 在这里引入 packages/* 中的包进行本地联调
-// 示例（添加子包后取消注释）：
-// import { myFunction } from 'my-lib'
+import { helloMyLib } from 'my-lib'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
+const message = helloMyLib('playground')
 
 app.innerHTML = `
   <h1>Playground</h1>
-  <p>在 <code>src/main.ts</code> 中引入本地包进行调试。</p>
+  <p>本地包输出：<code>${message}</code></p>
+  <p>修改 <code>packages/my-lib/src/index.ts</code> 后可在这里验证联调效果。</p>
 `
