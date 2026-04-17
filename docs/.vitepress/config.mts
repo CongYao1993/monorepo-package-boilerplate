@@ -1,6 +1,9 @@
 import { defineConfig } from 'vitepress'
 
+const base = process.env.NODE_ENV === 'production' ? '/monorepo-package-boilerplate/' : '/'
+
 export default defineConfig({
+  base,
   title: 'Package Template',
   description: '一个可复用的 monorepo 组件库脚手架模板',
   cleanUrls: true,
@@ -9,7 +12,7 @@ export default defineConfig({
     nav: [
       { text: '快速开始', link: '/guide/getting-started' },
       { text: 'API', link: '/api/' },
-      { text: 'GitHub', link: 'https://github.com/your-org/package-template' },
+      { text: 'GitHub', link: 'https://github.com/CongYao1993/monorepo-package-boilerplate' },
     ],
     sidebar: {
       '/guide/': [
@@ -25,7 +28,9 @@ export default defineConfig({
         },
       ],
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/your-org/package-template' }],
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/CongYao1993/monorepo-package-boilerplate' },
+    ],
     footer: {
       message: 'Built with pnpm workspaces, TypeScript, Rollup and VitePress.',
       copyright: 'Copyright © 2026 Package Template',
