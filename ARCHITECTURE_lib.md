@@ -8,14 +8,28 @@
 
 ### 2.1 包初始化
 
-当前 `my-lib` 采用标准 npm 包出口设计，消费方始终通过 `dist` 使用构建产物，而不是直接引用源码：
+当前 `my-lib` 采用标准 npm 包出口设计，消费方始终通过 `dist` 使用构建产物，而不是直接引用源码。同时，子包也补充了发布到 npm 所需的基础元信息，确保包在仓库外被消费时具备完整的说明、许可证与源码仓库指向能力：
 
 ```json
 {
   "name": "my-lib",
   "version": "0.0.0",
+  "description": "A template library package — replace this with your own description.",
+  "keywords": [],
+  "author": "CongYao",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git",
+    "directory": "packages/my-lib"
+  },
+  "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
+  "bugs": {
+    "url": "https://github.com/CongYao1993/monorepo-package-boilerplate/issues"
+  },
   "private": false,
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -27,7 +41,7 @@
       "default": "./dist/index.mjs"
     }
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -47,6 +61,35 @@
   - 包版本号。
   - 当前示例阶段使用 `0.0.0`，后续正式进入发布流程后会由 Changesets 统一管理版本变更。
 
+- `description`
+  - 包的简要说明。
+  - 这段内容会直接展示在 npm 包页面和搜索结果中，因此建议用一句话准确描述包的用途。
+
+- `keywords`
+  - npm 搜索关键词。
+  - 模板中先保留为空数组，实际使用时应根据组件库、工具库或 Cesium 封装库的场景填入关键词，方便检索与归类。
+
+- `author`
+  - 包作者信息。
+  - 这个字段主要用于包元信息展示，便于在发布后追溯维护者。
+
+- `license`
+  - 包许可证声明。
+  - 这里使用 `MIT`，并要求发包内容中携带对应的 `LICENSE` 文件，确保开源协议在 npm 分发时依然完整。
+
+- `repository`
+  - 源码仓库地址。
+  - 这里不仅声明了仓库 URL，还通过 `directory` 指向 monorepo 中的具体子包目录。
+  - 这样 npm 页面可以更准确地把消费者引导到当前包对应的源码位置，而不是只停留在仓库根目录。
+
+- `homepage`
+  - 包主页地址。
+  - 当前指向仓库 README，用于给使用者提供更完整的项目说明入口。
+
+- `bugs`
+  - 问题反馈地址。
+  - 通常指向仓库 issue 页面，方便使用者在发现问题后直接反馈。
+
 - `private`
   - 是否为私有包。
   - 这里显式写成 `false`，表示它是一个“可发布”的示例包，而不是仅供仓库内部使用的私有目录。
@@ -54,6 +97,11 @@
 - `type`
   - 指定当前包的模块系统语义。
   - 这里使用 `module`，表示包内 `.js` 文件按 ESM 处理，和当前 Rollup / Vite 的 ESM 配置保持一致。
+
+- `sideEffects`
+  - 用于声明这个包是否包含具有副作用、不能被安全摇树优化移除的模块。
+  - 这里设置为 `false`，表示当前示例包是纯函数式输出，没有全局副作用。
+  - 这对组件库和工具库非常重要，因为它能帮助现代打包工具更激进地做 Tree-shaking，减少最终产物体积。
 
 - `main`
   - CommonJS 默认入口。
@@ -80,7 +128,8 @@
 
 - `files`
   - 控制发包时实际包含哪些文件。
-  - 这里写成 `["dist"]`，表示 npm 发布时只带构建产物，不把 `src`、测试文件和本地配置一起发出去。
+  - 这里写成 `[`dist`, `README.md`, `LICENSE`]`，表示 npm 发布时会带上构建产物、包级说明文档和许可证文件。
+  - 这样既能避免把 `src`、测试文件和本地配置一起发出去，也能保证 npm 页面上有可读说明，并且发布内容带有完整协议声明。
 
 - `scripts`
   - 当前子包的本地命令集合。
@@ -90,11 +139,12 @@
     - `test`：运行该包相关测试
     - `typecheck`：只做类型检查，不输出文件
 
-这样设计有三个目的：
+这样设计有四个目的：
 
 1. **与真实发布行为一致**：`playground` 联调时消费的是和未来 npm 用户一致的包入口。
 2. **同时兼容 ESM / CJS / 类型声明**：浏览器构建工具、Node 环境和 TS 编辑器都能命中对应出口。
-3. **控制发布内容**：通过 `files: ["dist"]` 限制发包内容，避免源码和临时文件进入 npm 包。
+3. **控制发布内容**：通过 `files` 精确限制发包内容，避免源码和临时文件进入 npm 包。
+4. **补齐发布元信息**：通过 `description`、`license`、`repository`、`homepage`、`bugs` 等字段，让包在 npm 页面、源码仓库和问题反馈链路上都具备完整信息。
 
 #### tsconfig.json 设计
 
