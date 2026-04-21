@@ -25,7 +25,7 @@
 - `ESLint + Prettier + EditorConfig` 统一代码规范
 - `Husky + lint-staged + Commitlint` 规范提交流程
 - `Rollup` 输出 `ESM / CJS / IIFE / d.ts`
-- `Vitest` 统一单元测试入口
+- `Vitest` 统一单元测试入口与覆盖率统计
 - `Vite` 驱动本地 `playground` 联调
 - `VitePress` 构建文档站
 - `Changesets` 管理版本与 changelog
@@ -109,24 +109,25 @@ pnpm docs:dev
 
 ## 常用命令
 
-| 命令                    | 说明                                |
-| ----------------------- | ----------------------------------- |
-| `pnpm build`            | 构建所有包                          |
-| `pnpm dev`              | 启动 `playground`                   |
-| `pnpm dev:my-lib`       | 以 watch 模式构建示例包             |
-| `pnpm dev:playground`   | 启动本地联调应用                    |
-| `pnpm docs:dev`         | 启动文档站开发环境                  |
-| `pnpm docs:build`       | 构建文档站                          |
-| `pnpm lint`             | 执行 ESLint 检查                    |
-| `pnpm lint:fix`         | 自动修复可修复的 lint 问题          |
-| `pnpm format`           | 格式化仓库文件                      |
-| `pnpm test`             | 运行单元测试                        |
-| `pnpm test:watch`       | 以 watch 模式运行测试               |
-| `pnpm typecheck`        | 执行 TypeScript 类型检查            |
-| `pnpm changeset`        | 创建变更记录                        |
-| `pnpm version-packages` | 根据 changeset 更新版本与 changelog |
-| `pnpm release`          | 构建并发布包                        |
-| `pnpm clean`            | 清理构建产物                        |
+| 命令                    | 说明                                     |
+| ----------------------- | ---------------------------------------- |
+| `pnpm build`            | 构建所有包                               |
+| `pnpm dev`              | 启动 `playground`                        |
+| `pnpm dev:my-lib`       | 以 watch 模式构建示例包                  |
+| `pnpm dev:playground`   | 启动本地联调应用                         |
+| `pnpm docs:dev`         | 启动文档站开发环境                       |
+| `pnpm docs:build`       | 构建文档站                               |
+| `pnpm lint`             | 执行 ESLint 检查                         |
+| `pnpm lint:fix`         | 自动修复可修复的 lint 问题               |
+| `pnpm format`           | 格式化仓库文件                           |
+| `pnpm test`             | 运行单元测试                             |
+| `pnpm test:watch`       | 以 watch 模式运行测试                    |
+| `pnpm test:coverage`    | 运行测试、校验覆盖率阈值并生成覆盖率报告 |
+| `pnpm typecheck`        | 执行 TypeScript 类型检查                 |
+| `pnpm changeset`        | 创建变更记录                             |
+| `pnpm version-packages` | 根据 changeset 更新版本与 changelog      |
+| `pnpm release`          | 构建并发布包                             |
+| `pnpm clean`            | 清理构建产物                             |
 
 ## 示例包说明
 
@@ -202,7 +203,7 @@ pnpm docs:dev
 
 仓库当前已经包含三类工作流：
 
-- `ci.yml`：执行 `lint`、`typecheck`、`test`、`build`
+- `ci.yml`：执行 `lint`、`typecheck`、`test:coverage`、`build`
 - `release.yml`：基于 Changesets 创建版本 PR 或发布 npm 包
 - `docs.yml`：构建并部署文档站
 

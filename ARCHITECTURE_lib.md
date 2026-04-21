@@ -267,6 +267,18 @@ export default createConfig({
 - 心智负担低
 - 扩展到多包时不需要重新设计测试入口
 
+另外，根目录 `vitest.config.ts` 也已经内置覆盖率配置：
+
+- 使用 `v8` 作为覆盖率 provider
+- 通过 `pnpm test:coverage` 生成文本摘要、HTML 报告和 JSON summary
+- 默认统计 `packages/*/src/**/*.ts`
+- 默认排除 `*.test.ts`
+- 报告输出到根目录 `coverage/`
+- 默认覆盖率阈值为：`lines 80`、`functions 80`、`statements 80`、`branches 70`
+- CI 会直接执行 `pnpm test:coverage`，让覆盖率统计进入持续集成链路
+
+这样模板不仅能验证“测试是否通过”，也能在组件库、工具库和 Cesium 二次封装库场景下持续观察公开能力的测试覆盖情况。
+
 ### 2.4 playground 联调机制
 
 `playground` 通过 `workspace:*` 依赖本地包：
