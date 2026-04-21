@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
-const base = process.env.NODE_ENV === 'production' ? '/monorepo-package-boilerplate/' : '/'
+const docsBase = process.env.DOCS_BASE ?? '/'
+const base = docsBase.endsWith('/') ? docsBase : `${docsBase}/`
 
 export default defineConfig({
   base,

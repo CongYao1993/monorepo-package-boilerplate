@@ -43,6 +43,8 @@ jobs:
 
       - name: Build docs
         run: pnpm docs:build
+        env:
+          DOCS_BASE: /monorepo-package-boilerplate/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
