@@ -1,21 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "my-lib",
+  "name": "example-component",
   "version": "0.0.0",
-  "description": "A template library package — replace this with your own description.",
+  "description": "Example framework-agnostic component",
   "keywords": [],
   "author": "CongYao",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git",
-    "directory": "packages/my-lib"
+    "directory": "packages/example-component"
   },
   "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
   "bugs": {
     "url": "https://github.com/CongYao1993/monorepo-package-boilerplate/issues"
   },
-  "private": false,
+  "private": true,
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -39,5 +39,8 @@
     "dev": "rollup -c -w",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
-  }
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {}
 }

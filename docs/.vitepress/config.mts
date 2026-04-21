@@ -19,7 +19,10 @@ export default defineConfig({
       '/guide/': [
         {
           text: '指南',
-          items: [{ text: '快速开始', link: '/guide/getting-started' }],
+          items: [
+            { text: '快速开始', link: '/guide/getting-started' },
+            { text: '多场景包开发', link: '/guide/scenarios' }
+          ],
         },
       ],
       '/api/': [

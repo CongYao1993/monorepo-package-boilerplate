@@ -3,7 +3,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/.vitepress/dist/**'],
+    ignores: ['**/dist/**', '**/node_modules/**', '**/.vitepress/dist/**', '**/.vitepress/cache/**'],
   },
   tseslint.configs.recommended,
   eslintConfigPrettier,

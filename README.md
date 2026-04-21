@@ -36,7 +36,7 @@
 ```text
 package-template/
 ├── packages/              # 子包目录
-│   └── my-lib/            # 示例包
+│   └── example-utils/     # 示例包（utils 场景参考实现）
 ├── playground/            # 本地联调应用（Vite）
 ├── docs/                  # 文档站（VitePress）
 ├── scripts/               # 构建脚本
@@ -161,14 +161,21 @@ pnpm docs:dev
 
 ## 新增一个包的推荐流程
 
-1. 在 `packages/` 下新建子包目录
-2. 创建 `src/index.ts` 作为公开入口
-3. 复制并调整 `tsconfig.json`
-4. 编写 `package.json`，声明 `main`、`module`、`types`、`exports`
-5. 新建 `rollup.config.mjs`，复用根级 `createConfig`
-6. 添加最小测试文件
-7. 在 `playground/` 中验证使用方式
-8. 在 `docs/` 中补充接入说明和 API 文档
+不再需要手动复制粘贴！我们提供了自动化的包生成脚手架：
+
+```bash
+pnpm create:package --name <包名> --template <模板类型>
+```
+
+支持的模板类型（对应不同业务场景）：
+
+- `utils`: 纯逻辑工具包
+- `component`: 框架无关 DOM 组件包
+- `react`: React 组件包
+- `vue`: Vue 组件包
+- `cesium`: Cesium 插件扩展包
+
+生成后，脚手架会自动完成 `package.json` 的导出配置、`rollup.config.mjs` 构建接入以及基础的测试文件。详情请阅读文档站中的 **多场景包开发** 指南。
 
 ## 文档站
 

@@ -21,6 +21,7 @@ export function createConfig({
   name,
   external = [],
   iife = true,
+  dtsEnabled = true,
   globals = {},
   plugins: extraPlugins = [],
 }) {
@@ -70,14 +71,16 @@ export function createConfig({
     })
   }
 
-  configs.push({
-    input,
-    output: {
-      file: 'dist/index.d.ts',
-      format: 'esm',
-    },
-    plugins: [dts()],
-  })
+  if (dtsEnabled) {
+    configs.push({
+      input,
+      output: {
+        file: 'dist/index.d.ts',
+        format: 'esm',
+      },
+      plugins: [dts()],
+    })
+  }
 
   return configs
 }

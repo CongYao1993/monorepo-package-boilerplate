@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "__PACKAGE_NAME__",
+  "version": "0.0.0",
+  "description": "__PACKAGE_DESC__",
+  "keywords": [],
+  "author": "CongYao",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git",
+    "directory": "packages/__PACKAGE_NAME__"
+  },
+  "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
+  "bugs": {
+    "url": "https://github.com/CongYao1993/monorepo-package-boilerplate/issues"
+  },
+  "private": false,
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,8 @@
+{
+  "peerDependencies": {
+    "cesium": "^1.110.0"
+  },
+  "devDependencies": {
+    "cesium": "^1.110.0"
+  }
+}

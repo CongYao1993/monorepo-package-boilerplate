@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "my-lib": "workspace:*"
+    "example-utils": "workspace:*"
   },
   "devDependencies": {
     "vite": "^6.0.0"
