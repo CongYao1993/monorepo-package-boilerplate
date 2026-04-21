@@ -220,18 +220,38 @@ packages/my-lib/
 - `src/index.ts`：公开 API 入口，放对外导出的函数或组件。
 - `src/index.test.ts`：与入口能力配套的最小单元测试。
 - `tsconfig.json`：继承根目录 `tsconfig.base.json`，仅补充子包自身的 `rootDir`、`outDir` 等配置。
-- `rollup.config.mjs`：复用根目录 `rollup.config.base.mjs`，避免每个包重复写一份完整构建逻辑。
+- `rollup.config.mjs`：复用根目录 `rollup.config.base.mjs`，默认继承 ESM / CJS / `.d.ts` 构建策略，并可按需配置是否输出 IIFE、IIFE 的 `globals` 映射，以及额外注入自定义 Rollup 插件。
+
+当前示例包的写法如下：
+
+```js
+import { createConfig } from '../../rollup.config.base.mjs'
+
+export default createConfig({
+  name: 'MyLib',
+  iife: true,
+  globals: {},
+})
+```
+
+后续如果某个工具库不需要浏览器 `<script>` 产物，可以直接关闭 IIFE；如果某个 Cesium 二次封装包需要把外部依赖映射到全局变量，也可以通过 `globals` 显式声明；如果组件库需要额外接入样式处理插件，也可以通过 `plugins` 继续扩展。
 
 #### 构建产物策略
 
-示例包当前通过 Rollup 输出四类文件：
+示例包当前通过 Rollup 输出三到四类文件，具体取决于子包是否开启 IIFE：
 
 - `dist/index.mjs`：给 ESM 消费方使用
 - `dist/index.cjs`：给 CommonJS 消费方使用
-- `dist/index.iife.js`：给浏览器 `<script>` 场景使用
+- `dist/index.iife.js`：可选，给浏览器 `<script>` 场景使用
 - `dist/index.d.ts`：给 TypeScript 类型系统使用
 
-这些产物共同组成了一个“可发布包”的最小交付面：既能被现代 bundler 消费，也能兼容 CommonJS，同时保留完整类型信息。
+根级 `createConfig` 现在提供了三类扩展能力：
+
+- `iife`：控制当前包是否输出 IIFE 产物，适合让工具库按需关闭浏览器脚本构建
+- `globals`：在 IIFE 模式下声明外部依赖对应的全局变量名，适合需要把依赖保留为 external 的浏览器场景
+- `plugins`：允许子包在基础 TS / Node Resolve / CommonJS 插件之后继续注入自定义插件，例如样式处理、资源处理或框架扩展插件
+
+这些产物与扩展点共同组成了一个更通用的“可发布包”交付面：既能被现代 bundler 消费，也能兼容 CommonJS，同时保留完整类型信息，并为组件库、工具库、Cesium 二次封装库等不同场景预留构建差异化能力。
 
 ### 2.3 单元测试
 
