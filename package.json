@@ -24,7 +24,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish",
-    "clean": "rimraf packages/*/dist docs/.vitepress/dist coverage",
+    "clean": "pnpm -r exec rimraf dist && rimraf docs/.vitepress/dist coverage",
     "prepare": "husky"
   },
   "devDependencies": {

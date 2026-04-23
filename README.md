@@ -44,11 +44,7 @@ package-template/
 ├── rollup.config.base.mjs # 根级 Rollup 配置工厂
 ├── tsconfig.base.json     # 根级 TypeScript 基础配置
 ├── eslint.config.mjs      # ESLint flat config
-├── prettier.config.mjs    # Prettier 配置
-├── ARCHITECTURE.md        # 架构设计总览
-├── ARCHITECTURE_monorepo.md
-├── ARCHITECTURE_lib.md
-└── ARCHITECTURE_docs.md
+└── prettier.config.mjs    # Prettier 配置
 ```
 
 ## 技术选型
@@ -228,11 +224,12 @@ pnpm create:package --name <包名> --template <模板类型>
 
 ## 进一步阅读
 
-如果你想了解这套模板为什么这样设计、每个阶段解决了什么问题，可以继续阅读：
+如果你想了解这套模板为什么这样设计、每个阶段解决了什么问题，可以继续阅读文档站中的 **工程溯源** 章节：
 
-- `ARCHITECTURE.md`
-- `docs/guide/getting-started.md`
-- `docs/api/index.md`
+- [阶段一：Monorepo 基础设施](https://github.com/CongYao1993/monorepo-package-boilerplate/blob/main/docs/internals/phase-1-monorepo.md)
+- [阶段二：示例包结构](https://github.com/CongYao1993/monorepo-package-boilerplate/blob/main/docs/internals/phase-2-package.md)
+- [阶段三：文档站](https://github.com/CongYao1993/monorepo-package-boilerplate/blob/main/docs/internals/phase-3-docs.md)
+- [阶段四：多场景脚手架](https://github.com/CongYao1993/monorepo-package-boilerplate/blob/main/docs/internals/phase-4-scenarios.md)
 
 ## License
 
