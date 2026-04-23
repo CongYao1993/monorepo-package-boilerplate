@@ -164,20 +164,6 @@ ${description}
     )
     await fs.writeFile(docsYmlPath, docsYmlContent, 'utf-8')
 
-    const gettingStartedPath = path.resolve(ROOT_DIR, '.boilerplate-docs/guide/getting-started.md')
-    if (await fs.stat(gettingStartedPath).catch(() => null)) {
-      let gettingStartedContent = await fs.readFile(gettingStartedPath, 'utf-8')
-      gettingStartedContent = gettingStartedContent.replace(
-        /monorepo-package-boilerplate/g,
-        projectName,
-      )
-      gettingStartedContent = gettingStartedContent.replace(
-        /CongYao1993\/monorepo-package-boilerplate/g,
-        cleanGithubUrl.replace('https://github.com/', ''),
-      )
-      await fs.writeFile(gettingStartedPath, gettingStartedContent, 'utf-8')
-    }
-
     console.log('✅ 已更新 README.md 与模板文件')
   } catch (err) {
     console.error('⚠️ 替换其他模板信息时出错:', err)
@@ -192,10 +178,18 @@ ${description}
   console.log('--------------------------------------------------')
   console.log('后续建议操作：')
   console.log(
-    '1. 运行 \x1b[33mrm -rf .git\x1b[0m 清理原模板历史 (Windows: Remove-Item -Recurse -Force .git)',
+    '1. \x1b[33m清理旧 Git 历史\x1b[0m: rm -rf .git (Windows: Remove-Item -Recurse -Force .git)',
   )
-  console.log('2. 运行 \x1b[33mgit init\x1b[0m 开启你的全新 Git 历程')
-  console.log('3. 运行 \x1b[33mpnpm install\x1b[0m 重新安装依赖')
+  console.log(
+    '2. \x1b[33m重新初始化 Git\x1b[0m: git init && git add -A && git commit -m "feat: init from template"',
+  )
+  console.log(
+    '3. \x1b[33m关联并推送远程仓库\x1b[0m: git remote add origin <你的新仓库地址> && git push -u origin main',
+  )
+  console.log('4. \x1b[33m重新安装依赖\x1b[0m: pnpm install')
+  console.log(
+    '5. \x1b[33m配置 GitHub Pages\x1b[0m: 在仓库 Settings -> Pages 中将 Source 设置为 \x1b[33mGitHub Actions\x1b[0m',
+  )
   console.log('--------------------------------------------------\n')
 }
 

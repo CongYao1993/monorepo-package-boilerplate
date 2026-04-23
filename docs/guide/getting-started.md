@@ -37,21 +37,29 @@
 
 执行完一键初始化脚本后，你的项目代码已经焕然一新（去除了原模板信息）。此时我们再彻底清理历史，让新项目有一个干净的起点。
 
-1. **删除旧 Git 记录**：`rm -rf .git` (Windows 下可使用 `Remove-Item -Recurse -Force .git`)
-2. **重新初始化**：
+1. **清理旧 Git 历史**：`rm -rf .git` (Windows 下可使用 `Remove-Item -Recurse -Force .git`)
+2. **重新初始化 Git**：
    ```bash
    git init
    git add -A
-   git commit -m "feat: init from monorepo-package-boilerplate"
+   git commit -m "feat: init from template"
    ```
-3. **关联你的新远程仓库**：
+3. **关联并推送远程仓库**：
    ```bash
-   git remote add origin https://github.com/<你的用户名>/<你的新仓库>.git
+   git remote add origin <你的新仓库地址>
    git branch -M main
    git push -u origin main
    ```
 
-## Step 3: 准备联调底座 (Playground 适配)
+## Step 3: 配置 GitHub Pages
+
+为了让文档站能够通过 GitHub Actions 自动部署，你需要手动开启 Pages 功能：
+
+1. 前往你的 GitHub 仓库 **Settings -> Pages**。
+2. 在 **Build and deployment > Source** 处，选择 **`GitHub Actions`**。
+3. 之后每次推送代码到 `main` 分支，文档都会自动构建并发布。
+
+## Step 4: 准备联调底座 (Playground 适配)
 
 开发组件时，我们需要一个实时的网页预览环境，这就是 `playground` 目录的作用。
 
@@ -81,7 +89,7 @@ pnpm -F playground add -D @vitejs/plugin-react @types/react @types/react-dom
 
 配置完成后，将 `playground/src/main.ts` 改造成对应框架的挂载入口即可。
 
-## Step 4: 产出第一个业务包
+## Step 5: 产出第一个业务包
 
 一切就绪，开始写代码。本模板内置了自动化脚手架，避免手动复制粘贴配置：
 
@@ -93,7 +101,7 @@ pnpm create:package
 根据提示输入包名（如 `button`），选择你需要的模板类型（支持 `utils`、`component`、`react`、`vue`、`cesium` 等）。
 脚手架会自动在 `packages/` 目录下生成完整的工程结构、独立构建配置和测试基座。
 
-## Step 5: 本地联调与测试闭环
+## Step 6: 本地联调与测试闭环
 
 生成新包后，将其接入联调环境并开启开发模式：
 
@@ -119,7 +127,7 @@ pnpm test
 pnpm test:coverage
 ```
 
-## Step 6: 打通自动化发布链路
+## Step 7: 打通自动化发布链路
 
 代码开发并测试完毕后，我们将利用 Changesets 和 GitHub Actions 实现完全自动化的发版流程。
 
