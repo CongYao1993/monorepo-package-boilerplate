@@ -6,7 +6,7 @@ const base = docsBase.endsWith('/') ? docsBase : `${docsBase}/`
 export default defineConfig({
   base,
   title: 'Monorepo Package Boilerplate',
-  description: '一个可复用的 monorepo 组件库脚手架模板',
+  description: '🚀 A modern multi-scenario monorepo boilerplate for building component libraries & npm packages. 一套面向多场景的现代化组件库 monorepo 模板。',
   cleanUrls: true,
   lastUpdated: true,
   themeConfig: {

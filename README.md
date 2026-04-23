@@ -1,6 +1,15 @@
 # monorepo-package-boilerplate
 
-一个面向 npm 包 / 组件库场景的 `monorepo` 模板仓库。
+🚀 A modern multi-scenario monorepo boilerplate for building component libraries & npm packages.  
+一套面向多场景的现代化 npm 包 / 组件库 monorepo 模板。
+
+**核心工具链：** `pnpm workspaces` · `TypeScript` · `Rollup` · `Vitest` · `VitePress` · `Changesets` · `GitHub Actions`
+
+**支持场景：** `utils` · `component` · `react` · `vue` · `cesium`
+
+📖 线上文档：[congyao1993.github.io/monorepo-package-boilerplate](https://congyao1993.github.io/monorepo-package-boilerplate/)
+
+---
 
 它提供了一套从开发、测试、构建、联调、文档到版本发布的完整基础设施，适合用作组件库、工具库或多包项目的起点，而不是每次新建项目时重复搭建工程底座。
 

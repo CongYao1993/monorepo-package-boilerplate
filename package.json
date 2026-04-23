@@ -2,7 +2,7 @@
   "name": "monorepo-package-boilerplate",
   "version": "0.0.0",
   "private": true,
-  "description": "A framework-agnostic component library monorepo boilerplate",
+  "description": "🚀 A modern multi-scenario monorepo boilerplate for building component libraries & npm packages. 一套面向多场景的现代化组件库 monorepo 模板。",
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
