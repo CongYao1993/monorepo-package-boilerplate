@@ -35,8 +35,7 @@
 
 ```text
 package-template/
-├── packages/              # 子包目录
-│   └── example-utils/     # 示例包（utils 场景参考实现）
+├── packages/              # 子包目录（由脚手架 pnpm create:package 生成）
 ├── playground/            # 本地联调应用（Vite）
 ├── docs/                  # 文档站（VitePress）
 ├── scripts/               # 构建脚本
@@ -95,10 +94,10 @@ pnpm build
 pnpm dev:playground
 ```
 
-如果你需要联调示例包的构建输出，建议同时开启包的 watch：
+如果你需要联调本地包的构建输出，建议同时开启该包的 watch：
 
 ```bash
-pnpm dev:my-lib
+pnpm -F <包名> build --watch
 ```
 
 ### 4. 启动文档站
@@ -109,44 +108,25 @@ pnpm docs:dev
 
 ## 常用命令
 
-| 命令                    | 说明                                     |
-| ----------------------- | ---------------------------------------- |
-| `pnpm build`            | 构建所有包                               |
-| `pnpm dev`              | 启动 `playground`                        |
-| `pnpm dev:my-lib`       | 以 watch 模式构建示例包                  |
-| `pnpm dev:playground`   | 启动本地联调应用                         |
-| `pnpm docs:dev`         | 启动文档站开发环境                       |
-| `pnpm docs:build`       | 构建文档站                               |
-| `pnpm lint`             | 执行 ESLint 检查                         |
-| `pnpm lint:fix`         | 自动修复可修复的 lint 问题               |
-| `pnpm format`           | 格式化仓库文件                           |
-| `pnpm test`             | 运行单元测试                             |
-| `pnpm test:watch`       | 以 watch 模式运行测试                    |
-| `pnpm test:coverage`    | 运行测试、校验覆盖率阈值并生成覆盖率报告 |
-| `pnpm typecheck`        | 执行 TypeScript 类型检查                 |
-| `pnpm changeset`        | 创建变更记录                             |
-| `pnpm version-packages` | 根据 changeset 更新版本与 changelog      |
-| `pnpm release`          | 构建并发布包                             |
-| `pnpm clean`            | 清理构建产物                             |
-
-## 示例包说明
-
-当前仓库内置了一个示例包：`packages/my-lib`。
-
-它展示了一个“可发布 npm 包”最小闭环应该具备的结构：
-
-- `src/index.ts`：公开 API 入口
-- `src/index.test.ts`：最小单元测试
-- `package.json`：声明 `main` / `module` / `types` / `exports`
-- `rollup.config.mjs`：复用根级构建配置
-- `tsconfig.json`：继承根配置并做子包级最小覆写
-
-构建后默认输出：
-
-- `dist/index.mjs`
-- `dist/index.cjs`
-- `dist/index.iife.js`
-- `dist/index.d.ts`
+| 命令                           | 说明                                     |
+| ------------------------------ | ---------------------------------------- |
+| `pnpm build`                   | 构建所有包                               |
+| `pnpm dev`                     | 启动 `playground`                        |
+| `pnpm -F <包名> build --watch` | 以 watch 模式构建指定包                  |
+| `pnpm dev:playground`          | 启动本地联调应用                         |
+| `pnpm docs:dev`                | 启动文档站开发环境                       |
+| `pnpm docs:build`              | 构建文档站                               |
+| `pnpm lint`                    | 执行 ESLint 检查                         |
+| `pnpm lint:fix`                | 自动修复可修复的 lint 问题               |
+| `pnpm format`                  | 格式化仓库文件                           |
+| `pnpm test`                    | 运行单元测试                             |
+| `pnpm test:watch`              | 以 watch 模式运行测试                    |
+| `pnpm test:coverage`           | 运行测试、校验覆盖率阈值并生成覆盖率报告 |
+| `pnpm typecheck`               | 执行 TypeScript 类型检查                 |
+| `pnpm changeset`               | 创建变更记录                             |
+| `pnpm version-packages`        | 根据 changeset 更新版本与 changelog      |
+| `pnpm release`                 | 构建并发布包                             |
+| `pnpm clean`                   | 清理构建产物                             |
 
 ## 本地联调机制
 

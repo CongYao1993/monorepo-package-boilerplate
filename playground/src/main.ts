@@ -1,10 +1,6 @@
-import { hello } from 'example-utils'
-
 const app = document.querySelector<HTMLDivElement>('#app')!
-const message = hello()
 
 app.innerHTML = `
   <h1>Playground</h1>
-  <p>本地包输出：<code>${message}</code></p>
-  <p>修改 <code>packages/example-utils/src/index.ts</code> 后可在这里验证联调效果。</p>
+  <p>在 <code>playground/package.json</code> 的 <code>dependencies</code> 中添加你的包（如 <code>"your-package": "workspace:*"</code>），然后在这里导入并调试。</p>
 `
