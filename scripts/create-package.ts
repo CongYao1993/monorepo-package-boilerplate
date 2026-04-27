@@ -26,6 +26,16 @@ async function createPackage() {
     process.exit(1)
   }
 
+  // Get project prefix from root package.json
+  const rootPkg = JSON.parse(await fs.readFile(path.resolve(ROOT_DIR, 'package.json'), 'utf-8'))
+  const rootName = rootPkg.name
+  const prefix = `${rootName}-`
+
+  const fullPackageName =
+    packageName.startsWith('@') || packageName.includes('/')
+      ? packageName
+      : `${prefix}${packageName}`
+
   const targetDir = path.resolve(PACKAGES_DIR, packageName)
 
   try {
@@ -53,13 +63,15 @@ async function createPackage() {
 
   // 2. Copy base template
   await copyDirAndReplace(baseTemplateDir, targetDir, {
-    __PACKAGE_NAME__: packageName,
+    __PACKAGE_NAME__: fullPackageName,
+    __PACKAGE_DIR__: packageName,
     __PACKAGE_DESC__: packageDesc,
   })
 
   // 3. Copy scenario template (overwrites base and merges package.json)
   await copyDirAndReplace(scenarioTemplateDir, targetDir, {
-    __PACKAGE_NAME__: packageName,
+    __PACKAGE_NAME__: fullPackageName,
+    __PACKAGE_DIR__: packageName,
     __PACKAGE_DESC__: packageDesc,
   })
 

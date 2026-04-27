@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git",
-    "directory": "packages/__PACKAGE_NAME__"
+    "directory": "packages/__PACKAGE_DIR__"
   },
   "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
   "bugs": {

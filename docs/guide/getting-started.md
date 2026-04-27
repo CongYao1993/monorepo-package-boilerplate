@@ -33,9 +33,11 @@
    > [!TIP]
    > 强烈建议在初始化时填入你的 NPM 组织作用域（Scope，例如 `@your-org`）。这样后续在此 Monorepo 中生成的所有子包（如 `@your-org/button`、`@your-org/utils`）都能统一在此命名空间下，既整齐又能避免发布时与 NPM 上的其他包重名。
 
-## Step 2: 重新初始化 Git (强烈建议)
+## Step 2: 仓库初始化、配置与首次推送 (重要)
 
-执行完一键初始化脚本后，你的项目代码已经焕然一新（去除了原模板信息）。此时我们再彻底清理历史，让新项目有一个干净的起点。
+在完成品牌定制后，我们需要为新项目建立干净的 Git 历史，在 GitHub 上完成必要配置并完成首次推送。
+
+### 1. 本地仓库初始化
 
 1. **清理旧 Git 历史**：`rm -rf .git` (Windows 下可使用 `Remove-Item -Recurse -Force .git`)
 2. **重新初始化 Git**：
@@ -44,22 +46,31 @@
    git add -A
    git commit -m "feat: init from template"
    ```
-3. **关联并推送远程仓库**：
+3. **关联远程仓库**：
    ```bash
    git remote add origin <你的新仓库地址>
    git branch -M main
-   git push -u origin main
    ```
 
-## Step 3: 配置 GitHub Pages
+### 2. 云端环境配置 (Pages & Secrets)
 
-为了让文档站能够通过 GitHub Actions 自动部署，你需要手动开启 Pages 功能：
+在推送代码之前，**必须**先手动开启 Pages 的 Actions 部署功能，否则首次推送后 Actions 会报错。
 
 1. 前往你的 GitHub 仓库 **Settings -> Pages**。
 2. 在 **Build and deployment > Source** 处，选择 **`GitHub Actions`**。
-3. 之后每次推送代码到 `main` 分支，文档都会自动构建并发布。
+3. (可选) 前往 **Settings -> Secrets and variables -> Actions**，添加 `NPM_TOKEN`。详见 [Step 6](#step-6-打通自动化发布链路)。
 
-## Step 4: 准备联调底座 (Playground 适配)
+### 3. 首次推送与同步验证
+
+一切就绪后，将代码推送到远程仓库：
+
+```bash
+git push -u origin main
+```
+
+推送完成后，前往仓库的 **Actions** 选项卡，你应该能看到 `Docs` 流水线正在自动运行。完成后，你的文档站就会自动发布。
+
+## Step 3: 准备联调底座 (Playground 适配)
 
 开发组件时，我们需要一个实时的网页预览环境，这就是 `playground` 目录的作用。
 
@@ -69,27 +80,76 @@
 
 **如果你开发 Vue 组件库：**
 
+1. 给 playground 安装 vue 和 vite 插件
+
 ```bash
-# 1. 给 playground 安装 vue 和 vite 插件
 pnpm -F playground add vue
 pnpm -F playground add -D @vitejs/plugin-vue
+```
 
-# 2. 修改 playground/vite.config.ts，引入并使用 vue 插件
+2. 修改 playground/vite.config.ts，引入并使用 vue 插件
+
+```typescript
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  plugins: [vue()],
+  server: {
+    port: 3000,
+  },
+})
 ```
 
 **如果你开发 React 组件库：**
 
+1. 给 playground 安装 react 体系
+
 ```bash
-# 1. 给 playground 安装 react 体系
 pnpm -F playground add react react-dom
 pnpm -F playground add -D @vitejs/plugin-react @types/react @types/react-dom
+```
 
-# 2. 修改 playground/vite.config.ts，引入并使用 react 插件
+2. 修改 playground/vite.config.ts，引入并使用 react 插件
+
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+  },
+})
+```
+
+**如果你开发 Cesium 库：**
+
+1. 给 playground 安装 cesium 和 vite 插件
+
+```bash
+pnpm -F playground add cesium
+pnpm -F playground add -D vite-plugin-cesium
+```
+
+2. 修改 playground/vite.config.ts，引入并使用 cesium 插件
+
+```typescript
+import { defineConfig } from 'vite'
+import cesium from 'vite-plugin-cesium'
+
+export default defineConfig({
+  plugins: [cesium()],
+  server: {
+    port: 3000,
+  },
+})
 ```
 
 配置完成后，将 `playground/src/main.ts` 改造成对应框架的挂载入口即可。
 
-## Step 5: 产出第一个业务包
+## Step 4: 产出第一个业务包
 
 一切就绪，开始写代码。本模板内置了自动化脚手架，避免手动复制粘贴配置：
 
@@ -101,7 +161,7 @@ pnpm create:package
 根据提示输入包名（如 `button`），选择你需要的模板类型（支持 `utils`、`component`、`react`、`vue`、`cesium` 等）。
 脚手架会自动在 `packages/` 目录下生成完整的工程结构、独立构建配置和测试基座。
 
-## Step 6: 本地联调与测试闭环
+## Step 5: 本地联调与测试闭环
 
 生成新包后，将其接入联调环境并开启开发模式：
 
@@ -127,7 +187,7 @@ pnpm test
 pnpm test:coverage
 ```
 
-## Step 7: 打通自动化发布链路
+## Step 6: 打通自动化发布链路
 
 代码开发并测试完毕后，我们将利用 Changesets 和 GitHub Actions 实现完全自动化的发版流程。
 

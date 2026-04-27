@@ -72,10 +72,17 @@ async function init() {
     // 精准匹配 sidebar 中的 /internals/ 块，直到遇到缩进为6个空格的 ], 为止
     .replace(/\s*'\/internals\/': \[[\s\S]*?\n\s{6}\],?/g, '')
 
-  // 移除 guide 导航 (因为我们要清理掉默认的新手教程)
-  configContent = configContent
-    .replace(/\{\s*text: '快速开始',\s*link: '\/guide\/getting-started'\s*\},\s*/g, '')
-    .replace(/\s*'\/guide\/': \[[\s\S]*?\n\s{6}\],?/g, '')
+  // 简化 guide 侧边栏 (仅保留快速开始)
+  configContent = configContent.replace(
+    /\s*'\/guide\/': \[[\s\S]*?\n\s{6}\],?/g,
+    `
+      '/guide/': [
+        {
+          text: '指南',
+          items: [{ text: '快速开始', link: '/guide/getting-started' }]
+        }
+      ],`,
+  )
 
   await fs.writeFile(configPath, configContent, 'utf-8')
   console.log('✅ 已更新 docs/.vitepress/config.mts')
@@ -90,10 +97,38 @@ async function init() {
     await fs.rm(internalsDir, { recursive: true, force: true })
     console.log('✅ 已删除 docs/internals 目录')
 
-    // 归档开发指南备查
+    // 归档开发指南备查并重新生成快速开始
     await fs.mkdir(archiveDir, { recursive: true })
     await fs.rename(guideDir, path.resolve(archiveDir, 'guide'))
-    console.log('✅ 已将 docs/guide 归档备查')
+    await fs.mkdir(guideDir, { recursive: true })
+    await fs.writeFile(
+      path.resolve(guideDir, 'getting-started.md'),
+      `# 快速开始
+
+本项目是一个基于 pnpm workspaces 的 Monorepo 模板，用于构建组件库或 npm 包。
+
+## 安装依赖
+
+\`\`\`bash
+pnpm install
+\`\`\`
+
+## 常用命令
+
+- \`pnpm dev:playground\`: 启动联调环境
+- \`pnpm build\`: 构建所有包
+- \`pnpm docs:dev\`: 启动文档开发服务器
+- \`pnpm test\`: 运行测试
+
+## 创建新包
+
+\`\`\`bash
+pnpm run create:package
+\`\`\`
+`,
+      'utf-8',
+    )
+    console.log('✅ 已将 docs/guide 归档，并重新生成快速开始文档')
   } catch {
     // 忽略错误，如果文件不存在则不处理
   }
@@ -184,12 +219,12 @@ ${description}
     '2. \x1b[33m重新初始化 Git\x1b[0m: git init && git add -A && git commit -m "feat: init from template"',
   )
   console.log(
-    '3. \x1b[33m关联并推送远程仓库\x1b[0m: git remote add origin <你的新仓库地址> && git push -u origin main',
+    '3. \x1b[33m关联远程仓库\x1b[0m: git remote add origin <你的新仓库地址> && git branch -M main',
   )
-  console.log('4. \x1b[33m重新安装依赖\x1b[0m: pnpm install')
   console.log(
-    '5. \x1b[33m配置 GitHub Pages\x1b[0m: 在仓库 Settings -> Pages 中将 Source 设置为 \x1b[33mGitHub Actions\x1b[0m',
+    '4. \x1b[33m配置 GitHub Pages\x1b[0m: 在仓库 Settings -> Pages 中将 Source 设置为 \x1b[33mGitHub Actions\x1b[0m',
   )
+  console.log('5. \x1b[33m推送远程仓库\x1b[0m: git push -u origin main')
   console.log('--------------------------------------------------\n')
 }
 
