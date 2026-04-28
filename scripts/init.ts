@@ -49,7 +49,8 @@ async function init() {
     .replace(/title: '.*'/, `title: '${projectName}'`)
     .replace(/description:\s*'[^']*'/, `description: '${description.replace(/'/g, "\\'")}'`)
     .replace(/\{ text: '工程溯源', link: '\/internals\/' \},\s*/, '')
-    .replace(/'\/internals\/': \[\s*\{[\s\S]*?\}\s*\],\s*/, '')
+    .replace(/'\/guide\/': \[\s*\{[\s\S]*?\n\s{6}\],\s*/, '')
+    .replace(/'\/internals\/': \[\s*\{[\s\S]*?\n\s{6}\],\s*/, '')
     .replace(/\{ icon: 'github', link: '[^']+' \}/, `{ icon: 'github', link: '${cleanGithubUrl}' }`)
     .replace(/Monorepo Package Boilerplate/g, projectName)
 

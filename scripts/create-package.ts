@@ -1,7 +1,8 @@
-import fs from 'node:fs/promises'
+﻿import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
+import { copyCesiumAssets } from './copy-cesium-assets'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = path.resolve(__dirname, '..')
@@ -26,7 +27,6 @@ async function createPackage() {
     process.exit(1)
   }
 
-  // Get project prefix from root package.json
   const rootPkg = JSON.parse(await fs.readFile(path.resolve(ROOT_DIR, 'package.json'), 'utf-8'))
   const rootName = rootPkg.name
   const prefix = `${rootName}-`
@@ -43,7 +43,7 @@ async function createPackage() {
     console.error(`Error: Directory ${targetDir} already exists.`)
     process.exit(1)
   } catch {
-    // Directory doesn't exist, which is expected
+    // Directory doesn't exist, which is expected.
   }
 
   const baseTemplateDir = path.resolve(TEMPLATES_DIR, 'base')
@@ -58,7 +58,6 @@ async function createPackage() {
 
   console.log(`Creating package '${packageName}' using template '${templateName}'...`)
 
-  // 1. Create package directory
   await fs.mkdir(targetDir, { recursive: true })
 
   const replacements = {
@@ -70,49 +69,34 @@ async function createPackage() {
     '{{PACKAGE_DESC}}': packageDesc,
   }
 
-  // 2. Copy base template
   await copyDirAndReplace(baseTemplateDir, targetDir, replacements)
-
-  // 3. Copy scenario template (overwrites base and merges package.json)
   await copyDirAndReplace(scenarioTemplateDir, targetDir, replacements)
 
   console.log(`\n✅ Package '${packageName}' created successfully!`)
-  console.log(`\nNext steps:`)
+  console.log('\nNext steps:')
   console.log(`  1. cd packages/${packageName}`)
-  console.log(`  2. pnpm install`)
-  console.log(`  3. pnpm build`)
+  console.log('  2. pnpm install')
+  console.log('  3. pnpm build')
 
   if (templateName === 'cesium') {
-    console.log(`\n🚀 Automating Cesium Playground Setup...`)
+    console.log('\n🚀 Automating Cesium Playground Setup...')
     await setupCesiumPlayground()
   }
 
-  console.log(`\n  *. Connect the package to your playground to test it.\n`)
+  console.log('\n  *. Connect the package to your playground to test it.\n')
 }
 
 async function setupCesiumPlayground() {
   const playgroundDir = path.resolve(ROOT_DIR, 'playground')
   const pkgJsonPath = path.resolve(playgroundDir, 'package.json')
-  const viteConfigPath = path.resolve(playgroundDir, 'vite.config.ts')
   const mainTsPath = path.resolve(playgroundDir, 'src/main.ts')
 
-  // 1. Update package.json
   try {
     const pkgJson = JSON.parse(await fs.readFile(pkgJsonPath, 'utf-8'))
     pkgJson.dependencies = pkgJson.dependencies || {}
-    pkgJson.devDependencies = pkgJson.devDependencies || {}
 
-    let changed = false
     if (!pkgJson.dependencies.cesium) {
       pkgJson.dependencies.cesium = '^1.140.0'
-      changed = true
-    }
-    if (!pkgJson.devDependencies['vite-plugin-static-copy']) {
-      pkgJson.devDependencies['vite-plugin-static-copy'] = '^2.3.2'
-      changed = true
-    }
-
-    if (changed) {
       await fs.writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + '\n')
       console.log('  ✅ Updated playground/package.json')
     }
@@ -121,55 +105,27 @@ async function setupCesiumPlayground() {
     console.warn('  ⚠️ Failed to update playground/package.json:', message)
   }
 
-  // 2. Update vite.config.ts
   try {
-    const configContent = await fs.readFile(viteConfigPath, 'utf-8')
-    if (!configContent.includes('vite-plugin-static-copy')) {
-      const newConfig = `import { defineConfig } from 'vite'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-
-const cesiumSource = 'node_modules/cesium/Build/Cesium'
-const cesiumBaseUrl = 'cesium'
-
-export default defineConfig({
-  define: {
-    // 定义 Cesium 的基准路径
-    CESIUM_BASE_URL: JSON.stringify(\`/\${cesiumBaseUrl}\`)
-  },
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        { src: \`\${cesiumSource}/Workers\`, dest: cesiumBaseUrl },
-        { src: \`\${cesiumSource}/Assets\`, dest: cesiumBaseUrl },
-        { src: \`\${cesiumSource}/Widgets\`, dest: cesiumBaseUrl },
-        { src: \`\${cesiumSource}/ThirdParty\`, dest: cesiumBaseUrl },
-      ]
-    })
-  ],
-  server: {
-    port: 3000,
-  },
-})
-`
-      await fs.writeFile(viteConfigPath, newConfig)
-      console.log('  ✅ Updated playground/vite.config.ts')
-    }
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : String(e)
-    console.warn('  ⚠️ Failed to update playground/vite.config.ts:', message)
-  }
-
-  // 3. Update src/main.ts
-  try {
-    let mainContent = await fs.readFile(mainTsPath, 'utf-8')
+    const mainContent = await fs.readFile(mainTsPath, 'utf-8')
     if (!mainContent.includes('cesium/Build/Cesium/Widgets/widgets.css')) {
-      mainContent = `import 'cesium/Build/Cesium/Widgets/widgets.css'\n` + mainContent
-      await fs.writeFile(mainTsPath, mainContent)
+      const next = `import 'cesium/Build/Cesium/Widgets/widgets.css'\n${mainContent}`
+      await fs.writeFile(mainTsPath, next)
       console.log('  ✅ Updated playground/src/main.ts (added CSS import)')
     }
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
     console.warn('  ⚠️ Failed to update playground/src/main.ts:', message)
+  }
+
+  try {
+    const result = await copyCesiumAssets()
+    console.log('  ✅ Copied Cesium static assets:')
+    console.log(`     from: ${result.source}`)
+    console.log(`     to:   ${result.target}`)
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e)
+    console.warn('  ⚠️ Failed to copy Cesium static assets:', message)
+    console.warn('     You can run: pnpm copy:cesium')
   }
 }
 
@@ -190,12 +146,10 @@ async function copyDirAndReplace(
     } else {
       let content = await fs.readFile(srcPath, 'utf-8')
 
-      // Replace placeholders
       for (const [key, value] of Object.entries(replacements)) {
         content = content.replaceAll(key, value)
       }
 
-      // Merge package.json if it exists
       if (entry.name === 'package.json') {
         try {
           const existingContent = await fs.readFile(destPath, 'utf-8')
@@ -210,7 +164,7 @@ async function copyDirAndReplace(
           }
           content = JSON.stringify(mergedJson, null, 2) + '\n'
         } catch {
-          // File doesn't exist or isn't valid JSON, use new content
+          // File doesn't exist or isn't valid JSON.
         }
       }
 

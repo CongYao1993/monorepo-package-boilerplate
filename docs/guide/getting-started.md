@@ -70,7 +70,22 @@ git push -u origin main
 
 推送完成后，前往仓库的 **Actions** 选项卡，你应该能看到 `Docs` 流水线正在自动运行。完成后，你的文档站就会自动发布。
 
-## Step 3: 准备联调底座 (Playground 适配)
+## Step 3: 产出第一个业务包
+
+建议先创建业务包，再做 Playground 适配。这样你可以基于已生成的包按模板做最小配置，避免重复操作。
+
+```bash
+# 交互式提示创建（或者直接带参数执行）
+pnpm create:package
+```
+
+根据提示输入包名（如 `button`），选择你需要的模板类型（支持 `utils`、`component`、`react`、`vue`、`cesium` 等）。
+脚手架会自动在 `packages/` 目录下生成完整的工程结构、独立构建配置和测试基座。
+
+> [!TIP]
+> 当模板为 `cesium` 时，`create:package` 会自动完成部分 Playground 适配（如写入 `playground` 依赖、注入 Cesium 样式、拷贝静态资源）。后续只需按 Step 4/5 做补充检查即可。
+
+## Step 4: 准备联调底座 (Playground 适配)
 
 开发组件时，我们需要一个实时的网页预览环境，这就是 `playground` 目录的作用。
 
@@ -126,62 +141,28 @@ export default defineConfig({
 
 **如果你开发 Cesium 库：**
 
-1. 给 playground 安装 cesium 和静态资源拷贝插件
+1. 优先使用 `create:package` 的 `cesium` 模板自动完成初始化
 
 ```bash
-pnpm -F playground add cesium
-pnpm -F playground add -D vite-plugin-static-copy
+pnpm create:package --name <your-package-name> --template cesium
 ```
 
-2. 修改 playground/vite.config.ts，引入并使用静态资源拷贝插件
-
-```typescript
-import { defineConfig } from 'vite'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-
-const cesiumSource = 'node_modules/cesium/Build/Cesium'
-const cesiumBaseUrl = 'cesium'
-
-export default defineConfig({
-  define: {
-    // 定义 Cesium 的基准路径（注意需要 JSON.stringify）
-    CESIUM_BASE_URL: JSON.stringify(`/${cesiumBaseUrl}`),
-  },
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        { src: `${cesiumSource}/Workers`, dest: cesiumBaseUrl },
-        { src: `${cesiumSource}/Assets`, dest: cesiumBaseUrl },
-        { src: `${cesiumSource}/Widgets`, dest: cesiumBaseUrl },
-        { src: `${cesiumSource}/ThirdParty`, dest: cesiumBaseUrl },
-      ],
-    }),
-  ],
-  server: {
-    port: 3000,
-  },
-})
-```
-
-3. 在 `playground/src/main.ts` 中手动引入 Cesium 样式：
-
-```typescript
-import 'cesium/Build/Cesium/Widgets/widgets.css'
-```
-
-配置完成后，将 `playground/src/main.ts` 改造成对应框架的挂载入口即可。
-
-## Step 4: 产出第一个业务包
-
-一切就绪，开始写代码。本模板内置了自动化脚手架，避免手动复制粘贴配置：
+2. 检查并安装依赖
 
 ```bash
-# 交互式提示创建（或者直接带参数执行）
-pnpm create:package
+pnpm install
 ```
 
-根据提示输入包名（如 `button`），选择你需要的模板类型（支持 `utils`、`component`、`react`、`vue`、`cesium` 等）。
-脚手架会自动在 `packages/` 目录下生成完整的工程结构、独立构建配置和测试基座。
+3. 如需手动补齐，可执行静态资源拷贝命令：
+
+```bash
+pnpm copy:cesium
+```
+
+> [!TIP]
+> 当前默认方案不再依赖 `vite-plugin-static-copy` 或修改 `playground/vite.config.ts`。Cesium 静态资源会被拷贝到 `playground/public/cesium` 并由 Vite `public` 目录直接提供。
+
+配置完成后，将 `playground/src/main.ts` 改造成对应场景的挂载入口即可。
 
 ## Step 5: 本地联调与测试闭环
 
@@ -191,6 +172,9 @@ pnpm create:package
 
 因为是在 Monorepo 中，你需要告诉 Playground 依赖这个本地包：
 打开 `playground/package.json`，在 `dependencies` 中添加：`"你的新包名": "workspace:*"`，然后执行一次 `pnpm install`。
+
+> [!TIP]
+> 如果你在 Step 3 使用的是 `cesium` 模板，脚手架可能已经自动写入了 `playground` 的部分依赖和样式；先检查现有配置，再补充缺失项，避免重复改动。
 
 ### 2. 双终端热更新开发
 
