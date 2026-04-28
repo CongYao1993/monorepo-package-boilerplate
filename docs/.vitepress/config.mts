@@ -14,7 +14,7 @@ export default defineConfig({
       { text: '快速开始', link: '/guide/getting-started' },
       { text: 'API', link: '/api/' },
       { text: '工程溯源', link: '/internals/' },
-      { text: 'GitHub', link: 'https://github.com/CongYao1993/monorepo-package-boilerplate' },
+      { text: 'GitHub', link: 'https://github.com/congcn/monorepo-package-boilerplate' },
     ],
     sidebar: {
       '/guide/': [
@@ -48,7 +48,7 @@ export default defineConfig({
       ],
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/CongYao1993/monorepo-package-boilerplate' },
+      { icon: 'github', link: 'https://github.com/congcn/monorepo-package-boilerplate' },
     ],
     footer: {
       message: 'Built with pnpm workspaces, TypeScript, Rollup and VitePress.',

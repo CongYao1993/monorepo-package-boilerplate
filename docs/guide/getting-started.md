@@ -15,7 +15,7 @@
 
 1. **克隆代码**：
    ```bash
-   git clone https://github.com/CongYao1993/monorepo-package-boilerplate.git
+   git clone https://github.com/congcn/monorepo-package-boilerplate.git
    cd monorepo-package-boilerplate
    ```
 2. **安装依赖**：运行初始化脚本前需要先安装依赖以加载运行环境（如 `tsx`）。

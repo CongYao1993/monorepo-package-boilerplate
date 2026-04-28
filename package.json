@@ -5,11 +5,11 @@
   "description": "🚀 A modern multi-scenario monorepo boilerplate for building component libraries & npm packages. 一套面向多场景的现代化组件库 monorepo 模板。",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git"
+    "url": "git+https://github.com/congcn/monorepo-package-boilerplate.git"
   },
-  "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
+  "homepage": "https://github.com/congcn/monorepo-package-boilerplate#readme",
   "bugs": {
-    "url": "https://github.com/CongYao1993/monorepo-package-boilerplate/issues"
+    "url": "https://github.com/congcn/monorepo-package-boilerplate/issues"
   },
   "engines": {
     "node": ">=20.0.0",

@@ -148,7 +148,7 @@ ${description}
     const basePkgPath = path.resolve(ROOT_DIR, 'scripts/templates/base/package.json')
     let basePkgContent = await fs.readFile(basePkgPath, 'utf-8')
     basePkgContent = basePkgContent.replace(
-      /CongYao1993\/monorepo-package-boilerplate/g,
+      /congcn\/monorepo-package-boilerplate/g,
       cleanGithubUrl.replace('https://github.com/', ''),
     )
     await fs.writeFile(basePkgPath, basePkgContent, 'utf-8')

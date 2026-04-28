@@ -8,12 +8,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CongYao1993/monorepo-package-boilerplate.git",
+    "url": "git+https://github.com/congcn/monorepo-package-boilerplate.git",
     "directory": "packages/__PACKAGE_DIR__"
   },
-  "homepage": "https://github.com/CongYao1993/monorepo-package-boilerplate#readme",
+  "homepage": "https://github.com/congcn/monorepo-package-boilerplate#readme",
   "bugs": {
-    "url": "https://github.com/CongYao1993/monorepo-package-boilerplate/issues"
+    "url": "https://github.com/congcn/monorepo-package-boilerplate/issues"
   },
   "private": false,
   "type": "module",

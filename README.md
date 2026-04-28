@@ -7,7 +7,7 @@ A modern monorepo boilerplate for building component libraries and npm packages.
 
 支持场景：`utils` · `component` · `react` · `vue` · `cesium`
 
-在线文档：[https://congyao1993.github.io/monorepo-package-boilerplate/](https://congyao1993.github.io/monorepo-package-boilerplate/)
+在线文档：[https://congcn.github.io/monorepo-package-boilerplate/](https://congcn.github.io/monorepo-package-boilerplate/)
 
 ## 项目定位
 
