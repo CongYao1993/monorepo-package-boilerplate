@@ -22,7 +22,7 @@ if (packages.length === 0) {
 
 for (const pkg of packages) {
   console.log(`\nBuilding ${pkg}...`)
-  execSync('pnpm rollup -c', {
+  execSync('pnpm run build', {
     cwd: join(packagesDir, pkg),
     stdio: 'inherit',
   })
