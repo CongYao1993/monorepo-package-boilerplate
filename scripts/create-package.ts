@@ -80,13 +80,13 @@ async function createPackage() {
 
   if (templateName === 'cesium') {
     console.log('\n🚀 Automating Cesium Playground Setup...')
-    await setupCesiumPlayground()
+    await setupCesiumPlayground(fullPackageName)
   }
 
   console.log('\n  *. Connect the package to your playground to test it.\n')
 }
 
-async function setupCesiumPlayground() {
+async function setupCesiumPlayground(fullPackageName: string) {
   const playgroundDir = path.resolve(ROOT_DIR, 'playground')
   const pkgJsonPath = path.resolve(playgroundDir, 'package.json')
   const mainTsPath = path.resolve(playgroundDir, 'src/main.ts')
@@ -106,12 +106,24 @@ async function setupCesiumPlayground() {
   }
 
   try {
-    const mainContent = await fs.readFile(mainTsPath, 'utf-8')
-    if (!mainContent.includes('cesium/Build/Cesium/Widgets/widgets.css')) {
-      const next = `import 'cesium/Build/Cesium/Widgets/widgets.css'\n${mainContent}`
-      await fs.writeFile(mainTsPath, next)
-      console.log('  ✅ Updated playground/src/main.ts (added CSS import)')
-    }
+    const next = `;(window as any).CESIUM_BASE_URL = '/cesium'
+
+import 'cesium/Build/Cesium/Widgets/widgets.css'
+import { createViewer } from '${fullPackageName}'
+
+const app = document.querySelector<HTMLDivElement>('#app')!
+
+app.innerHTML = \`
+  <h1>Cesium Playground</h1>
+  <div id="cesiumContainer" style="width: 100%; height: 500px;"></div>
+\`
+
+// 2. 使用 createViewer 初始化
+// 传入容器的 ID "cesiumContainer"
+const viewer = createViewer('cesiumContainer')
+`
+    await fs.writeFile(mainTsPath, next, 'utf-8')
+    console.log('  ✅ Updated playground/src/main.ts')
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
     console.warn('  ⚠️ Failed to update playground/src/main.ts:', message)

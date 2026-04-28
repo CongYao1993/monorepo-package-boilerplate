@@ -8,6 +8,8 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/.vitepress/dist/**',
       '**/.vitepress/cache/**',
+      'playground/public/cesium/**',
+      'docs/public/cesium/**',
     ],
   },
   tseslint.configs.recommended,

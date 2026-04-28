@@ -85,6 +85,8 @@ pnpm create:package
 > [!TIP]
 > 当模板为 `cesium` 时，`create:package` 会自动完成部分 Playground 适配（如写入 `playground` 依赖、注入 Cesium 样式、拷贝静态资源）。后续只需按 Step 4/5 做补充检查即可。
 
+如果你希望根据不同业务类型选择更合适的模板与依赖策略，请继续阅读 [多场景包开发指北](./scenarios.md)。
+
 ## Step 4: 准备联调底座 (Playground 适配)
 
 开发组件时，我们需要一个实时的网页预览环境，这就是 `playground` 目录的作用。
